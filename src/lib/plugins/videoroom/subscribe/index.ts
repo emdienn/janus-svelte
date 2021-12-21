@@ -63,8 +63,10 @@ export function putPeers(initSub: InitSubscribe, publishers: Publisher[]): Updat
 
 /**
  * Helper function for updating a store of Peers, marking a particular peer as 'ended' (which happens when that
- * publisher hangs up). In previous versions, we just deleted the publisher from the index, but this led to strange
- * behaviour in svelte, so instead we make the peer as ended, which can be used as a filter in the UI.
+ * publisher hangs up).
+ *
+ * In previous versions, we just deleted the publisher from the index, but this led to strange behaviour in svelte,
+ * so instead we make the peer as ended, which can be used as a filter in the UI.
  */
 export function markAsEnded(unpublished: number): Updater<Peers> {
   return function (peers: Peers) {

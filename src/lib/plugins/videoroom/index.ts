@@ -4,12 +4,18 @@ import { makePublish } from './publish'
 import { makeSubscribe } from './subscribe'
 
 import type { JanusJS } from 'janus-gateway-ts'
+import type { Readable } from 'svelte/store'
 
 import type { PublishSpec } from './publish/factory'
 import type { PluginHandle } from '../../plugins/attach'
+import type { Peers } from './subscribe'
 
 export const VIDEO_ROOM = 'janus.plugin.videoroom'
 
+export type AttachEvent = {
+  publish: InitPublish
+  peers: Readable<Peers>
+}
 
 /**
  * Our parameters for how to join a room. Both username and pin are optional

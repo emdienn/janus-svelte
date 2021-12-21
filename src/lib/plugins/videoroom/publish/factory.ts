@@ -106,6 +106,15 @@ export default function (make: MakeHandle, room: number) {
 
         debounce = setTimeout(() => {
 
+          // protect against janus assuming we want to send media when we actually don't
+          if (!('video' in media)) {
+            media.video = false
+          }
+
+          if (!('audio' in media)) {
+            media.audio = false
+          }
+
           const offer: any = { media }
 
           // TODO: handle simulcast options

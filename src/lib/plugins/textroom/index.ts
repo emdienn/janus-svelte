@@ -11,6 +11,9 @@ import type { OneOf } from '../../utils/typing'
 
 const TEXT_ROOM = 'janus.plugin.textroom'
 
+/**
+ * The structure of messages received from TextRoom
+ */
 export type Message = {
   textroom: string
   transaction: string

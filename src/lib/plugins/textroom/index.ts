@@ -11,6 +11,20 @@ import type { OneOf } from '../../utils/typing'
 
 const TEXT_ROOM = 'janus.plugin.textroom'
 
+export type Message = {
+  textroom: string
+  transaction: string
+  participants?: Participant[]
+  join?: string
+  leave?: string
+  room?: number
+  from?: string
+  date?: string
+  text?: string
+  username?: string
+  display?: string
+}
+
 /**
  * The anatomy of a participant
  */

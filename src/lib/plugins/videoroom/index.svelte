@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
+  import { onMount, createEventDispatcher } from 'svelte'
   import { writable } from 'svelte/store'
   import Janus from 'janus-gateway-ts'
 
@@ -24,6 +24,7 @@
   // generate publish and subscribe helpers
   const { publish, subscribe } = makeMakeHandle(janus, { room, pin, username })
 
+  const dispatch = createEventDispatcher()
 
   // our core handle is the one that's going to maintain a watch out for consumer connections, and will mutate our list
   // of available feeds accordingly. It uses the 'publisher' ptype, but it doesn't actually utilise it. The actual
@@ -46,17 +47,24 @@
       // if we're notified of publishers, update accordingly
       if ('publishers' in message && message.publishers.length) {
         peerStore.update(putPeers(subscribe, message.publishers))
+        message.publishers.forEach(p => {
+          dispatch('join', p)
+        })
       }
 
       // if we're notified of a publisher hangup, mark them as ended
 
       if ('unpublished' in message) {
         peerStore.update(markAsEnded(message.unpublished))
+        dispatch('leave', message.unpublished)
       }
       if ('leaving' in message) {
         peerStore.update(markAsEnded(message.leaving))
+        dispatch('leave', message.leaving)
       }
     })
+
+    dispatch('attach', { publish, peers })
   })
 
 </script>

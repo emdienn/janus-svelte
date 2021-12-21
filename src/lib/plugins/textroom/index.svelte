@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
-  import { writable, get } from 'svelte/store'
+  import { createEventDispatcher, onMount } from 'svelte'
+  import { writable } from 'svelte/store'
   import Janus from 'janus-gateway-ts'
 
   import makeMakeHandle, { markAsEnded, putPeers } from '.'
@@ -8,7 +8,7 @@
   import type { JanusJS } from 'janus-gateway-ts'
   import type { Readable } from 'svelte/store'
 
-  import type { Send, Peers } from '.'
+  import type { Send, Peers, Message } from '.'
   import type { Event } from '../attach'
 
   // the janus connection we're using
@@ -21,6 +21,8 @@
 
   let on: Event
   let send: Send
+
+  const dispatch = createEventDispatcher()
 
   const connect = makeMakeHandle(janus, { room, pin, username })
 
@@ -42,24 +44,31 @@
     peerStore.update(putPeers(plugin.initParticipants))
     delete plugin.initParticipants
 
-    handle.on('data', (_, data) => {
+    handle.on('data', (_, data: Message) => {
 
       // if we're notified of participants, update accordingly
       if ('participants' in data && data.participants.length) {
         peerStore.update(putPeers(data.participants))
+        data.participants.forEach(p => {
+          dispatch('join', p)
+        })
       }
 
       // if we're notified of a peer hangup, mark them as ended
       if (data.textroom === 'leave') {
         peerStore.update(markAsEnded(data.username))
+        dispatch('leave', data.username)
       }
 
       // if we're notified of a peer join, add them to the index
       if (data.textroom === 'join') {
         const { username, display } = data
         peerStore.update(putPeers([ { username, display } ]))
+        dispatch('join', { username, display })
       }
     })
+
+    dispatch('attach', { on, send, peers })
   })
 
 </script>

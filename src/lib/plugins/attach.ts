@@ -16,8 +16,10 @@ interface Events {
   error: (error: any) => void
 }
 
+export type Event = <K extends keyof Events>(event: K, callback: (handle: JanusJS.PluginHandle, ...args: Parameters<Events[K]>) => ReturnType<Events[K]>) => void
+
 export type Handle = {
-  on: <K extends keyof Events>(event: K, callback: (handle: JanusJS.PluginHandle, ...args: Parameters<Events[K]>) => ReturnType<Events[K]>) => void
+  on: Event
 } & JanusJS.PluginHandle
 
 export type PluginHandle<T> = {

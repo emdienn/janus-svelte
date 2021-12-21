@@ -17,7 +17,7 @@
   export let janus: JanusJS.Janus
 
   // the room connection details
-  export let username: string
+  export let username: string = undefined
   export let room: number
   export let pin: string = undefined
 

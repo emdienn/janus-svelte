@@ -76,7 +76,7 @@ export default function (janus: JanusJS.Janus, plugin: string) {
       iceState: (state) => dispatch('icestate', state),
       mediaState: ({ on, type }) => dispatch('mediastate', on, type),
       oncleanup: () => dispatch('cleanup'),
-      ondata: (data: any) => dispatch('data', data),
+      ondata: (data: any) => dispatch('data', JSON.parse(data)),
       ondataopen: () => dispatch('dataopen'),
       onlocalstream: (stream) => dispatch('localstream', stream),
       onmessage: (message, jsep) => dispatch('message', message, jsep),

@@ -136,6 +136,5 @@ export type { VideoOffer, AudioOffer } from './publish'
 // components
 
 export { default as VideoRoom } from './index.svelte'
-export { default as Video } from './video.svelte'
 export { Publish } from './publish'
 export { Peer } from './subscribe'

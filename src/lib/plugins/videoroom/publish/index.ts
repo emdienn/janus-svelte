@@ -33,6 +33,8 @@ export { default as makePublish } from './factory'
 
 export type { VideoOffer, AudioOffer } from './factory'
 
+export * as Factory from './factory'
+
 // components
 
 export { default as Publish } from './index.svelte'

@@ -136,6 +136,8 @@ export async function mountSubscription(peer: PeerModel): Promise<PluginHandle<{
 }
 
 
+export * as Factory from './factory'
+
 // utils
 
 export { default as makeSubscribe } from './factory'

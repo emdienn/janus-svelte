@@ -155,9 +155,10 @@ export default function (janus: JanusJS.Janus, { room, pin, username }: RoomOpti
 }
 
 
-// types
+// utils
 
-export type { VideoOffer, AudioOffer } from './publish'
+export * as Pub from './publish'
+export * as Sub from './subscribe'
 
 
 // components

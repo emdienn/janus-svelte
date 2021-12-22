@@ -132,9 +132,22 @@ export default function (janus: JanusJS.Janus, { room, pin = undefined, username
     })
 
     handle.on('data', (_, data) => {
+      if (resolved) {
+        return
+      }
+      if (data.transaction != joinTxId) {
+        return
+      }
 
-      // if we receive a successful response from our join request, resolve
-      if (!resolved && data.textroom === 'success' && data.transaction == joinTxId) {
+      if ('error' in data) {
+        // failed to join, reject
+        resolved = true
+        reject({
+          message: data.error,
+          code: data.error_code,
+        })
+      } else if (data.textroom === 'success') {
+        // if we receive a successful response from our join request, resolve
         resolved = true
         resolve({
           handle,

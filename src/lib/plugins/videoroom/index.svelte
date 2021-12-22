@@ -39,7 +39,7 @@
     subscribe: peerStore.subscribe
   }
 
-  onMount(async () => {
+  async function mount() {
     // generate our core (manager) plugin handle
     core = await publish(Janus.randomString(12))
 
@@ -65,10 +65,21 @@
     })
 
     dispatch('attach', { publish, peers })
+  }
+
+  onMount(async () => {
+    try {
+      await mount()
+    } catch (e) {
+      error = e
+      dispatch('error', e)
+    }
   })
 
 </script>
 
 {#if core}
   <slot {publish} {peers} />
+{:else if error}
+  <slot name="error" {error} />
 {/if}

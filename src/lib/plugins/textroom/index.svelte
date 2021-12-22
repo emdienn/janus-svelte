@@ -22,6 +22,9 @@
   let on: Event
   let send: Send
 
+  // if we fail to connect, capture the outcome
+  let error: any
+
   const dispatch = createEventDispatcher()
 
   const connect = makeMakeHandle(janus, { room, pin, username })
@@ -34,7 +37,7 @@
     subscribe: peerStore.subscribe
   }
 
-  onMount(async () => {
+  async function mount() {
     const { handle, plugin } = await connect(Janus.randomString(12))
 
     on = handle.on
@@ -69,10 +72,20 @@
     })
 
     dispatch('attach', { on, send, peers })
+  }
+
+  onMount(async () => {
+    try {
+      await mount()
+    } catch (e) {
+      error = e
+    }
   })
 
 </script>
 
 {#if on}
   <slot {on} {send} {peers} />
+{:else if error}
+  <slot name="error" {error} />
 {/if}

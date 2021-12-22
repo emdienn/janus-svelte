@@ -10,10 +10,13 @@
   // the remote-feed media stream we will expose
   let stream: MediaStream
 
+  // if our subscribe fails, capture the output here
+  let error: any
+
   // extract these elements so we can push them to the slot
   let { meta, ended } = peer
 
-  onMount(async () => {
+  async function mount() {
     // create our subscriber handle
     const subscription = await mountSubscription(peer)
 
@@ -22,10 +25,21 @@
       stream = s
       dispatch('remotestream', s)
     })
+  }
+
+  onMount(async () => {
+    try {
+      await mount()
+    } catch (e) {
+      error = e
+      dispatch('error', e)
+    }
   })
 
 </script>
 
 {#if stream}
   <slot {stream} meta={$meta} {ended} />
+{:else if error}
+  <slot name="error" {error} />
 {/if}

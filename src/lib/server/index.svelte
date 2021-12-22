@@ -24,6 +24,7 @@
   onMount(async () => {
     try {
       janus = await init({ server, debug, dependencies, apisecret, iceServers, ipv6, maxPollEvents, token, withCredentials })
+      dispatch('connect', janus)
     } catch (e) {
       // render our slot and dispatch our message
       error = e

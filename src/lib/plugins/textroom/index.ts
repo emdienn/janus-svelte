@@ -88,7 +88,7 @@ export type InitTextRoom = (opaqueId: string) => Promise<PluginHandle<{
 // this never changes, so why declare it into memory repeatedly?
 const media = { video: false, audio: false, data: true }
 
-export default function (janus: JanusJS.Janus, { room, pin = undefined, username }): InitTextRoom {
+export function connect(janus: JanusJS.Janus, { room, pin = undefined, username }): InitTextRoom {
 
   // prepare our attach function for this plugin
   const attach = prepareAttach(janus, TEXT_ROOM)

@@ -3,7 +3,7 @@
   import { writable } from 'svelte/store'
   import Janus from 'janus-gateway-ts'
 
-  import makeMakeHandle, { markAsEnded, putPeers } from '.'
+  import { connect, markAsEnded, putPeers } from '.'
 
   import type { JanusJS } from 'janus-gateway-ts'
   import type { Readable } from 'svelte/store'
@@ -27,7 +27,7 @@
 
   const dispatch = createEventDispatcher()
 
-  const connect = makeMakeHandle(janus, { room, pin, username })
+  const makePluginHandle = connect(janus, { room, pin, username })
 
   // our store of peers
   const peerStore = writable<Peers>({})
@@ -38,7 +38,7 @@
   }
 
   async function mount() {
-    const { handle, plugin } = await connect(Janus.randomString(12))
+    const { handle, plugin } = await makePluginHandle(Janus.randomString(12))
 
     on = handle.on
     send = plugin.send

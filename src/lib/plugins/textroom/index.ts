@@ -4,12 +4,21 @@ import { writable } from 'svelte/store'
 import prepareAttach from '../attach'
 
 import type { JanusJS } from 'janus-gateway-ts'
-import type { Updater, Writable } from 'svelte/store'
+import type { Readable, Updater, Writable } from 'svelte/store'
 
 import type { PluginHandle } from '../attach'
 import type { OneOf } from '../../utils/typing'
 
 const TEXT_ROOM = 'janus.plugin.textroom'
+
+/**
+ * The properties exposed when the component attached
+ */
+export type AttachEvent = {
+  on: Event
+  send: Send
+  peers: Readable<Peers>
+}
 
 /**
  * The structure of messages received from TextRoom

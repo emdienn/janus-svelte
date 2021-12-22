@@ -12,6 +12,9 @@ import type { Peers } from './subscribe'
 
 export const VIDEO_ROOM = 'janus.plugin.videoroom'
 
+/**
+ * The properties exposed when the component attached
+ */
 export type AttachEvent = {
   publish: InitPublish
   peers: Readable<Peers>

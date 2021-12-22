@@ -6,7 +6,7 @@ import prepareAttach from '../attach'
 import type { JanusJS } from 'janus-gateway-ts'
 import type { Readable, Updater, Writable } from 'svelte/store'
 
-import type { PluginHandle } from '../attach'
+import type { PluginHandle, Event } from '../attach'
 import type { OneOf } from '../../utils/typing'
 
 const TEXT_ROOM = 'janus.plugin.textroom'

@@ -31,6 +31,9 @@
   // publish will be left to the Publish component.
   let core: PluginHandle<{ room: number }>
 
+  // if something goes wrong in init, drop the output here
+  let error: any
+
   // our store of peers
   const peerStore = writable<Peers>({})
 

@@ -11,7 +11,8 @@
 
   import type { Message } from '.'
   import type { Peers } from './subscribe'
-  import type { PluginHandle } from 'janus-svelte/plugins/attach'
+  import type { PluginHandle } from '../../plugins/attach'
+  import type { PublishSpec } from './publish/factory'
 
   // the janus connection we're using
   export let janus: JanusJS.Janus
@@ -29,7 +30,7 @@
   // our core handle is the one that's going to maintain a watch out for consumer connections, and will mutate our list
   // of available feeds accordingly. It uses the 'publisher' ptype, but it doesn't actually utilise it. The actual
   // publish will be left to the Publish component.
-  let core: PluginHandle<{ room: number }>
+  let core: PluginHandle<PublishSpec>
 
   // if something goes wrong in init, drop the output here
   let error: any

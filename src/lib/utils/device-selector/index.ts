@@ -1,6 +1,6 @@
 import Janus from 'janus-gateway-ts'
 
-export { default as DeviceSelector } from './index.svelte'
+export { default as Selector } from './index.svelte'
 
 /**
  * Config option for which kinds of media to check and return
@@ -15,7 +15,7 @@ type ListDevices = (callback: (devices: MediaDeviceInfo[]) => void, config?: Lis
 /**
  * The return structure of the ListDevices function
  */
-export type SelectedDevices = { audio?: DeviceId, video?: DeviceId }
+export type SelectedDevices = { audio?: Id, video?: Id }
 
 /**
  * Index devices as lists according to their kind
@@ -23,9 +23,9 @@ export type SelectedDevices = { audio?: DeviceId, video?: DeviceId }
 export type Devices = Record<'videoinput' | 'audioinput', MediaDeviceInfo[]>
 
 /**
- * For sanity's sake, explicitly declare this pithy type
+ * For sanity's sake, explicitly declare this trivial type
  */
-export type DeviceId = string
+export type Id = string
 
 /**
  * A promisified wrapper around Janus' listDevices() function

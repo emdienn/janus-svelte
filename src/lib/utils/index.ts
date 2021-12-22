@@ -1,2 +1,3 @@
 export { default as Video } from './video.svelte'
-export { default as DeviceSelector } from './device-selector/index.svelte'
+
+export * as Device from './device-selector'

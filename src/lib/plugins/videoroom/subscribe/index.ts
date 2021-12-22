@@ -2,7 +2,6 @@ import Janus from 'janus-gateway-ts'
 import { writable } from 'svelte/store'
 
 import type { Writable, Updater } from 'svelte/store'
-import type { JanusJS } from 'janus-gateway-ts'
 import type { PluginHandle } from '../../../plugins/attach'
 import type { InitSubscribe, Message, Publisher } from '..'
 import type { SubscribePluginHandle } from './factory'
@@ -131,26 +130,6 @@ export async function mountSubscription(peer: PeerModel): Promise<PluginHandle<{
         break
     }
 
-    if (jsep) {
-      // reciprocate the handshake with a "yes please"
-      subscription.handle.createAnswer({
-        jsep,
-        media: { audioSend: false, videoSend: false, data: true },
-
-        // TODO: customizeSdp here
-
-        success: (jsep: JanusJS.JSEP) => {
-          // request that Janus start sending us the remote stream
-          subscription.handle.send({
-            jsep,
-            message: {
-              request: 'start',
-              room: subscription.plugin.room,
-            }
-          })
-        },
-      })
-    }
   })
 
   return subscription

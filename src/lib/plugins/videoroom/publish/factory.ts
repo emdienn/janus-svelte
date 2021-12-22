@@ -1,6 +1,6 @@
 import type { PluginHandle } from 'janus-svelte/plugins/attach'
 import type { JanusJS } from 'janus-gateway-ts'
-import type { MakeHandle } from '..'
+import type { MakeHandle, Publisher } from '..'
 
 /**
  * Janus-specific resolution spec strings, for convenience.
@@ -31,6 +31,7 @@ export type PublishSpec = {
   offer: Offer
   id?: number
   privateId?: number
+  initPublishers?: Publisher[]
 }
 
 /**
@@ -45,7 +46,7 @@ const mediaTemplate = () => ({
 /**
  * Publisher factory function
  */
-export default function (make: MakeHandle, room: number) {
+export default function (make: MakeHandle) {
 
   /**
    * Generate a publisher
@@ -61,7 +62,10 @@ export default function (make: MakeHandle, room: number) {
     let media: any = mediaTemplate()
 
     // generate our publisher handle
-    const publisher = await make(opaqueId, { ptype: 'publisher' }, {
+    const publisher = await make(opaqueId, { ptype: 'publisher' }, (_, { id, room, private_id, publishers }) => ({
+      id: parseInt(id),
+      privateId: parseInt(private_id),
+      initPublishers: publishers,
       room,
       offer: offer => {
 
@@ -156,7 +160,7 @@ export default function (make: MakeHandle, room: number) {
 
         }, 50)
       },
-    } as PublishSpec)
+    }) as PublishSpec)
 
     return publisher
   }

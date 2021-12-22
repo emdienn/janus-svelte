@@ -7,7 +7,7 @@ import type { JanusJS } from 'janus-gateway-ts'
 import type { Readable } from 'svelte/store'
 
 import type { PublishSpec } from './publish/factory'
-import type { PluginHandle } from '../../plugins/attach'
+import type { PluginHandle, Handle } from '../../plugins/attach'
 import type { Peers } from './subscribe'
 
 export const VIDEO_ROOM = 'janus.plugin.videoroom'
@@ -88,7 +88,7 @@ export type JoinOptions = {
 /**
  * Generic function signature for attaching a new handle
  */
-export type MakeHandle = <T>(opaqueId: string, options: JoinOptions, plugin: T) => Promise<PluginHandle<T>>
+export type MakeHandle = <T>(opaqueId: string, options: JoinOptions, makePlugin: (handle: Handle, msg: Message, jsep: JanusJS.JSEP) => T) => Promise<PluginHandle<T>>
 
 
 /**
@@ -114,9 +114,26 @@ export default function (janus: JanusJS.Janus, { room, pin, username }: RoomOpti
   const attach = prepareAttach(janus, VIDEO_ROOM)
 
   // prepare our handle-make function
-  const make: MakeHandle = async (opaqueId, options, plugin) => {
+  const make: MakeHandle = async (opaqueId, options, makePlugin) => new Promise(async (resolve, reject) => {
+
+    let resolved = false
+
     // request a new Janus handle: this will throw an error if it fails
     const handle = await attach(opaqueId)
+
+    handle.on('message', (_, message: Message, jsep) => {
+      if (resolved) {
+        return
+      }
+      resolved = true
+
+      if ('error' in message) {
+        reject({ message: message.error, code: message.error_code })
+      } else {
+        resolve({ handle, plugin: makePlugin(handle, message, jsep) })
+      }
+
+    })
 
     // on attach, send our join request
     handle.send({
@@ -128,12 +145,11 @@ export default function (janus: JanusJS.Janus, { room, pin, username }: RoomOpti
       }
     })
 
-    return { handle, plugin }
-  }
+  })
 
   // factory our specific types of handles
-  const publish = makePublish(make, room)
-  const subscribe = makeSubscribe(make, room)
+  const publish = makePublish(make)
+  const subscribe = makeSubscribe(make)
 
   return { subscribe, publish }
 }

@@ -9,7 +9,7 @@
   import type { JanusJS } from 'janus-gateway-ts'
   import type { Readable } from 'svelte/store'
 
-  import type { Message } from '.'
+  import type { Message, Publisher } from '.'
   import type { Peers } from './subscribe'
   import type { PluginHandle } from '../../plugins/attach'
   import type { PublishSpec } from './publish/factory'
@@ -43,17 +43,29 @@
     subscribe: peerStore.subscribe
   }
 
+  /**
+   * Utility function for updating our peers list
+   */
+  function updatePeers(publishers: Publisher[]) {
+    if (publishers && publishers.length) {
+      peerStore.update(putPeers(subscribe, publishers))
+      publishers.forEach(p => dispatch('join', p))
+    }
+  }
+
   async function mount() {
     // generate our core (manager) plugin handle
     core = await publish(Janus.randomString(12))
 
+    // handle any publishers already in the room
+    updatePeers(core.plugin.initPublishers)
+    delete core.plugin.initPublishers
+
+
     core.handle.on('message', (handle, message: Message, jsep) => {
       // if we're notified of publishers, update accordingly
-      if ('publishers' in message && message.publishers.length) {
-        peerStore.update(putPeers(subscribe, message.publishers))
-        message.publishers.forEach(p => {
-          dispatch('join', p)
-        })
+      if ('publishers' in message) {
+        updatePeers(message.publishers)
       }
 
       // if we're notified of a publisher hangup, mark them as ended

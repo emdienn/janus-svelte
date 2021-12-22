@@ -52,6 +52,8 @@ export type Message = {
   room?: number
   unpublished?: number
   leaving?: number
+  error?: string
+  error_code?: number
 }
 
 /**

@@ -95,7 +95,7 @@
 </script>
 
 {#if core}
-  <slot {publish} {peers} />
+  <slot {publish} peers={$peers} />
 {:else if error}
   <slot name="error" {error} />
 {/if}

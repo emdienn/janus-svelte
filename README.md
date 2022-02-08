@@ -11,11 +11,15 @@ Available now at an npm near you:
 ```
 npm i janus-svelte
 ```
+
 or
+
 ```
 yarn add janus-svelte
 ```
+
 or
+
 ```
 git clone git@github.com:emdienn/janus-svelte.git
 ```
@@ -40,10 +44,10 @@ file. The motivation here is that if you need the flexibility to ignore the `<Co
 code, you can do that: the components are simply svelte wrappers around those functions, exposing data via nested slots
 and event dispatches (as we'll see in the examples below.)
 
- * The `server/` directory contains the core connection component.
- * The `plugins/` directory contains a subdirectory for each implemented plugin, each containing one or more components
-   depending on the plugin's complexity.
- * The `utils/` directory contains components and scripts that are common to all components.
+- The `server/` directory contains the core connection component.
+- The `plugins/` directory contains a subdirectory for each implemented plugin, each containing one or more components
+  depending on the plugin's complexity.
+- The `utils/` directory contains components and scripts that are common to all components.
 
 ### One-Stop Import
 
@@ -71,6 +75,7 @@ plugin types and/or behaviours, to alias the plugin directly:
 ```
 
 The main plugin components, though, are explicitly exported at the top level:
+
 ```html
 <script>
   import * as J from 'janus-svelte'
@@ -79,9 +84,7 @@ The main plugin components, though, are explicitly exported at the top level:
 <J.VideoRoom>
   <!-- your implementation here -->
 </J.VideoRoom>
-
 ```
-
 
 ### Slots and Events
 
@@ -108,12 +111,9 @@ variables in the way best served by your application.
     // this error corresponds to the one exposed in the error slot
     const error = e.detail
   }
-
 </script>
 
-<J.VideoRoom {janus} {room} {username} {pin} let:publish let:peers
-  on:attach={handleAttach} on:error={handleError}
->
+<J.VideoRoom {janus} {room} {username} {pin} let:publish let:peers on:attach="{handleAttach}" on:error="{handleError}">
   <div slot="error" let:error>
     <h1>Room Join Failed</h1>
     <pre>{JSON.stringify(error, null, 2)}</pre>
@@ -123,6 +123,7 @@ variables in the way best served by your application.
   <!-- you could do something with `publish` and `peers` here -->
 </J.VideoRoom>
 ```
+
 ## Core Component Reference
 
 These are pretty copy-paste-able: obviously fill out things like your server and your room credentials, but for the most
@@ -151,12 +152,9 @@ part this is all functional code.
   function handleError(e: CustomEvent) {
     console.error(e.detail)
   }
-
 </script>
 
-<J.Server {server} {debug} let:janus
-  on:connect={handleConnect} on:error={handleError}
->
+<J.Server {server} {debug} let:janus on:connect="{handleConnect}" on:error="{handleError}">
   <div slot="error" let:error>
     <h2>[ERROR {error.code}] {error.message}</h2>
   </div>
@@ -278,43 +276,49 @@ part this is all functional code.
   function handleRemoteStream(e: CustomEvent<{ peer: VR.Sub.PeerModel }>) {
     const { peer } = e.detail
   }
-
 </script>
 
 <J.Server server="my.janus.dev" debug="all" let:janus>
-  <J.VideoRoom {janus} {room} {username} {pin} let:publish let:peers
-    on:attach={handleRoomAttach} on:error={handleError}
-    on:join={handlePeerJoin} on:leave={handlePeerLeave}
-  >
+  <J.VideoRoom
+    {janus}
+    {room}
+    {username}
+    {pin}
+    let:publish
+    let:peers
+    on:attach="{handleRoomAttach}"
+    on:error="{handleError}"
+    on:join="{handlePeerJoin}"
+    on:leave="{handlePeerLeave}">
     <div slot="error" let:error>
       <h2>[ERROR {error.code}] {error.message}</h2>
     </div>
 
     <h2>Video room {room} joined</h2>
 
-    <VR.Publish {publish} {videoOffer} {audioOffer} let:stream
-      on:attach={handlePublishAttach} on:localstream={handleLocalStream}
-    >
+    <VR.Publish
+      {publish}
+      {videoOffer}
+      {audioOffer}
+      let:stream
+      on:attach="{handlePublishAttach}"
+      on:localstream="{handleLocalStream}">
       <!-- this binds a <video /> element, you can see your face now! -->
       <J.Utils.Video {stream} />
     </VR.Publish>
 
     <!-- iterating and filtering $peers -->
-      <!-- the Peer component will actively subscribe to the peer feed -->
-      <VR.Peer peer={$peers[n]} let:stream let:meta
-        on:remotestream={handleRemoteStream}
-      >
-        <div slot="error" let:error>
-          <pre>{JSON.stringify(error, null, 2)}</pre>
-        </div>
+    <!-- the Peer component will actively subscribe to the peer feed -->
+    <VR.Peer peer="{$peers[n]}" let:stream let:meta on:remotestream="{handleRemoteStream}">
+      <div slot="error" let:error>
+        <pre>{JSON.stringify(error, null, 2)}</pre>
+      </div>
 
-        <!-- view the remote feed with a video element -->
-        <J.Utils.Video {stream} />
-        <!-- meta is a Readable store -->
-
-      </VR.Peer>
+      <!-- view the remote feed with a video element -->
+      <J.Utils.Video {stream} />
+      <!-- meta is a Readable store -->
+    </VR.Peer>
     <!-- /iteration -->
-
   </J.VideoRoom>
 </J.Server>
 ```
@@ -340,10 +344,9 @@ part this is all functional code.
     // display the error in the console
     console.error(e)
   }
-
 </script>
 
-<J.Server {server} {debug} let:janus on:error={handleError}>
+<J.Server {server} {debug} let:janus on:error="{handleError}">
   <!-- display the error on the page -->
   <div slot="error" let:error>
     <h1>Connection Failed</h1>
@@ -373,10 +376,9 @@ part this is all functional code.
   function handleError(e) {
     console.error(e)
   }
-
 </script>
 
-<J.Server {server} {debug} let:janus on:error={handleError}>
+<J.Server {server} {debug} let:janus on:error="{handleError}">
   <div slot="error" let:error>
     <h1>Connection Failed</h1>
     <pre>{JSON.stringify(error, null, 2)}</pre>
@@ -385,16 +387,13 @@ part this is all functional code.
   <h1>Connected to {janus.getServer()}</h1>
 
   <!-- The VideoRoom component will auto-join the room we specify -->
-  <J.VideoRoom {janus} {room} {username} {pin} let:publish let:peers
-    on:error={handleError}
-  >
+  <J.VideoRoom {janus} {room} {username} {pin} let:publish let:peers on:error="{handleError}">
     <div slot="error" let:error>
       <h1>Room Join Failed</h1>
       <pre>{JSON.stringify(error, null, 2)}</pre>
     </div>
 
     <h2>Joined room {room}</h2>
-
   </J.VideoRoom>
 </J.Server>
 ```
@@ -426,10 +425,9 @@ part this is all functional code.
   function handlePublishAttach({ detail: feedId }: CustomEvent<number>) {
     localFeedId = feedId
   }
-
 </script>
 
-<J.Server {server} {debug} let:janus on:error={handleError}>
+<J.Server {server} {debug} let:janus on:error="{handleError}">
   <div slot="error" let:error>
     <h1>Connection Failed</h1>
     <pre>{JSON.stringify(error, null, 2)}</pre>
@@ -437,10 +435,7 @@ part this is all functional code.
 
   <h1>Connected to {janus.getServer()}</h1>
 
-
-  <J.VideoRoom {janus} {room} {username} {pin} let:publish let:peers
-    on:error={handleError}
-  >
+  <J.VideoRoom {janus} {room} {username} {pin} let:publish let:peers on:error="{handleError}">
     <div slot="error" let:error>
       <h1>Room Join Failed</h1>
       <pre>{JSON.stringify(error, null, 2)}</pre>
@@ -448,16 +443,12 @@ part this is all functional code.
 
     <h2>Joined room {room}</h2>
 
-    <J.VideoRoom.Publish {publish} {videoOffer} {audioOffer} let:stream
-      on:attach={handlePublishAttach}
-    >
+    <J.VideoRoom.Publish {publish} {videoOffer} {audioOffer} let:stream on:attach="{handlePublishAttach}">
       <p>Publish {localFeedId}</p>
 
       <!-- show our local stream on the page so we can see ourselves -->
       <J.Video {stream} />
-
     </J.VideoRoom.Publish>
-
   </J.VideoRoom>
 </J.Server>
 ```
@@ -485,10 +476,9 @@ part this is all functional code.
   function peerFilter(peer: J.Plugins.VideoRoom.Sub.PeerModel) {
     return !peer.ended && get(peer.meta).display !== username
   }
-
 </script>
 
-<J.Server {server} {debug} let:janus on:error={handleError}>
+<J.Server {server} {debug} let:janus on:error="{handleError}">
   <div slot="error" let:error>
     <h1>Connection Failed</h1>
     <pre>{JSON.stringify(error, null, 2)}</pre>
@@ -496,10 +486,7 @@ part this is all functional code.
 
   <h1>Connected to {janus.getServer()}</h1>
 
-
-  <J.VideoRoom {janus} {room} {username} {pin} let:publish let:peers
-    on:error={handleError}
-  >
+  <J.VideoRoom {janus} {room} {username} {pin} let:publish let:peers on:error="{handleError}">
     <div slot="error" let:error>
       <h1>Room Join Failed</h1>
       <pre>{JSON.stringify(error, null, 2)}</pre>
@@ -514,14 +501,13 @@ part this is all functional code.
 
     <!-- filter out our own feed, otherwise we subscribe to ourselves -->
     {#each Object.entries(peers).filter(peerFilter) as peer}
-      <!-- accept the connection with a Peer component -->
-      <J.Plugins.VideoRoom.Peer {peer} let:stream let:meta>
-        <p>Peer: {meta.display}</p>
-        <!-- and show the feed on the page -->
-        <J.Utils.Video {stream} />
-      </J.Plugins.VideoRoom.Peer>
+    <!-- accept the connection with a Peer component -->
+    <J.Plugins.VideoRoom.Peer {peer} let:stream let:meta>
+      <p>Peer: {meta.display}</p>
+      <!-- and show the feed on the page -->
+      <J.Utils.Video {stream} />
+    </J.Plugins.VideoRoom.Peer>
     {/each}
-
   </J.VideoRoom>
 </J.Server>
 ```

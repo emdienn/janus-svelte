@@ -1,4 +1,9 @@
 import Janus from 'janus-gateway-ts'
+import { derived, writable } from 'svelte/store'
+
+import type { Readable } from 'svelte/store'
+import type { AudioOffer, VideoOffer } from '$lib/plugins/videoroom/publish'
+import type { DeviceOffer } from '$lib/plugins/videoroom/publish/factory'
 
 export { default as Selector } from './index.svelte'
 
@@ -41,6 +46,44 @@ export type Devices = Record<'videoinput' | 'audioinput', MediaDeviceInfo[]>
  * For sanity's sake, explicitly declare this trivial type
  */
 export type Id = string
+
+export type Offer = VideoOffer | AudioOffer
+
+export type OfferManager = {
+  mute: () => void
+  unmute: () => void
+  setDeviceId: (deviceId: string) => void
+  offer: Readable<DeviceOffer | false>
+}
+
+/**
+ * Wrap up the logic for offer handling: `mute` will always set the offer to
+ * false, otherwise it's a janus-compatible object structure with the deviceId
+ */
+export function setupOffer(initial: Offer | false): OfferManager {
+
+  const make = ([ exact, muted ]: [ string, boolean ]): DeviceOffer | false => muted ? false : { deviceId: { exact } }
+
+  const id = writable<string>()
+  const muted = writable<boolean>(initial === false)
+  const offer = derived<[ typeof id, typeof muted ], DeviceOffer | false>([ id, muted ], make, initial as any)
+
+  function setDeviceId(deviceId: string) {
+    id.set(deviceId)
+  }
+
+  function mute() {
+    muted.set(false)
+  }
+
+  function unmute() {
+    muted.set(true)
+  }
+
+  return {
+    mute, unmute, setDeviceId, offer
+  }
+}
 
 /**
  * A promisified wrapper around Janus' listDevices() function

@@ -6,7 +6,7 @@ import type { JanusJS } from 'janus-gateway-ts'
 // incorporate the webrtc adapter into our dependencies by default
 const deps = (dependencies:JanusJS.Dependencies) => Janus.useDefaultDependencies({ adapter, ...dependencies })
 
-type InitOptions = {
+export type InitOptions = {
   server: JanusJS.ConstructorOptions['server']
   apisecret?: JanusJS.ConstructorOptions['apisecret']
   withCredentials?: JanusJS.ConstructorOptions['withCredentials']

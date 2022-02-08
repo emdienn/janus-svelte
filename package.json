@@ -7,7 +7,7 @@
     "build": "svelte-kit build",
     "package": "svelte-kit package",
     "preview": "svelte-kit preview",
-    "prepare": "npm run build",
+    "prepare": "npm run package",
     "prepublishOnly": "npm run lint",
     "preversion": "npm run lint",
     "version": "npm run format",

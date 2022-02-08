@@ -26,7 +26,7 @@ export type AudioOffer = boolean | DeviceOffer
 /**
  * An offer can have one or both of video and audio offers
  */
-export type Offer = (offer: { video?: VideoOffer, audio?: AudioOffer }) => void
+export type Offer = (offer: { video?: VideoOffer; audio?: AudioOffer }) => void
 
 /**
  * The structure of extra data / functionality attached to our Publisher PluginHandle
@@ -52,120 +52,119 @@ const mediaTemplate = () => ({
  * Publisher factory function
  */
 export default function (make: MakeHandle) {
-
   /**
    * Generate a publisher
    */
   return async function (opaqueId: string): Promise<PluginHandle<PublishSpec>> {
-
     // we debounce offers, because if multiple come in rapid succession (ie. within the time it takes to perform a
     // round-trip to the janus server), the latter will clobber the former. By debouncing, we collate changes then send
     // them all in one packet
     let debounce: NodeJS.Timeout
 
     // prepare our template
-    let media: any = mediaTemplate()
+    let media: Record<string, unknown> = mediaTemplate()
 
     // generate our publisher handle
-    const publisher = await make(opaqueId, { ptype: 'publisher' }, (_, { id, room, private_id, publishers }) => ({
-      id: parseInt(id),
-      privateId: parseInt(private_id),
-      initPublishers: publishers,
-      room,
-      offer: offer => {
-
-        // clear any previous debounce pending
-        if (debounce) {
-          clearTimeout(debounce)
-        }
-
-        // handle audio change
-        if ('audio' in offer) {
-          // handle mute
-          if (offer.audio === false) {
-            media.removeAudio = true
-            media.audioSend = false
-            delete media.replaceAudio
-            delete media.audio
-          } else {
-            // handle unmute / change source
-            media.audio = offer.audio
-            media.audioSend = true
-            media.replaceAudio = true
-            delete media.removeAudio
-          }
-        }
-
-        // handle video change
-        if ('video' in offer) {
-          // handle mute
-          if (offer.video === false) {
-            media.removeVideo = true
-            media.videoSend = false
-            delete media.replaceVideo
-            delete media.video
-          } else {
-            // handle unmute / change source
-            media.video = offer.video
-            media.videoSend = true
-            media.replaceVideo = true
-            delete media.removeVideo
-          }
-        }
-
-        debounce = setTimeout(() => {
-
-          // protect against janus assuming we want to send media when we actually don't
-          if (!('video' in media)) {
-            media.video = false
-          }
-
-          if (!('audio' in media)) {
-            media.audio = false
-          }
-
-          const offer: any = { media }
-
-          // TODO: handle simulcast options
-
-          // if ('simulcast' in opts) {
-          //   offer.simulcast = opts.simulcast
-          // }
-
-          // if ('simulcast2' in opts) {
-          //   offer.simulcast2 = opts.simulcast2
-          // }
-
-          publisher.handle.createOffer({
-            ...offer,
-            success: (jsep: JanusJS.JSEP) => {
-
-              // reset our template
-              media = mediaTemplate()
-
-              const message: any = {
-                request: 'configure',
-                data: true,
-              }
-
-              // if we had audio, offer audio
-              if ('audio' in offer) {
-                message.audio = offer.audio ? true : false
-              }
-
-              // if we had video, offer video
-              if ('video' in offer) {
-                message.video = offer.video ? true : false
-              }
-
-              // finalise the transaction by sending our 'configure' message
-              publisher.handle.send({ jsep, message })
+    const publisher = await make(
+      opaqueId,
+      { ptype: 'publisher' },
+      (_, { id, room, private_id, publishers }) =>
+        ({
+          id: parseInt(id),
+          privateId: parseInt(private_id),
+          initPublishers: publishers,
+          room,
+          offer: offer => {
+            // clear any previous debounce pending
+            if (debounce) {
+              clearTimeout(debounce)
             }
-          })
 
-        }, 50)
-      },
-    }) as PublishSpec)
+            // handle audio change
+            if ('audio' in offer) {
+              // handle mute
+              if (offer.audio === false) {
+                media.removeAudio = true
+                media.audioSend = false
+                delete media.replaceAudio
+                delete media.audio
+              } else {
+                // handle unmute / change source
+                media.audio = offer.audio
+                media.audioSend = true
+                media.replaceAudio = true
+                delete media.removeAudio
+              }
+            }
+
+            // handle video change
+            if ('video' in offer) {
+              // handle mute
+              if (offer.video === false) {
+                media.removeVideo = true
+                media.videoSend = false
+                delete media.replaceVideo
+                delete media.video
+              } else {
+                // handle unmute / change source
+                media.video = offer.video
+                media.videoSend = true
+                media.replaceVideo = true
+                delete media.removeVideo
+              }
+            }
+
+            debounce = setTimeout(() => {
+              // protect against janus assuming we want to send media when we actually don't
+              if (!('video' in media)) {
+                media.video = false
+              }
+
+              if (!('audio' in media)) {
+                media.audio = false
+              }
+
+              const offer: Record<string, unknown> = { media }
+
+              // TODO: handle simulcast options
+
+              // if ('simulcast' in opts) {
+              //   offer.simulcast = opts.simulcast
+              // }
+
+              // if ('simulcast2' in opts) {
+              //   offer.simulcast2 = opts.simulcast2
+              // }
+
+              publisher.handle.createOffer({
+                ...offer,
+                success: (jsep: JanusJS.JSEP) => {
+                  // reset our template
+                  media = mediaTemplate()
+
+                  const message: JanusJS.PluginMessage['message'] = {
+                    request: 'configure',
+                    data: true,
+                  }
+
+                  // if we had audio, offer audio
+                  if ('audio' in offer) {
+                    message.audio = offer.audio ? true : false
+                  }
+
+                  // if we had video, offer video
+                  if ('video' in offer) {
+                    message.video = offer.video ? true : false
+                  }
+
+                  // finalise the transaction by sending our 'configure' message
+                  publisher.handle.send({ jsep, message })
+                },
+              })
+            }, 50)
+          },
+        } as PublishSpec),
+    )
 
     return publisher
   }

@@ -27,9 +27,8 @@
   let stream: MediaStream
   let feedId: number
 
-
   // assertion function for testing whether something is a store
-  function assertIsStore<T>(offer: any): asserts offer is Readable<T> {
+  function assertIsStore<T>(offer): asserts offer is Readable<T> {
     if (!('subscribe' in offer)) {
       throw new Error('Subscribe method not found')
     }
@@ -58,7 +57,6 @@
       // is this actually a store?
       assertIsStore<VideoOffer>(videoOffer)
       videoOffer.subscribe(video => publisher.plugin.offer({ video }))
-
     } catch (e) {
       publisher.plugin.offer({ video: videoOffer as VideoOffer })
     }
@@ -69,12 +67,10 @@
       // is this actually a store?
       assertIsStore<AudioOffer>(audioOffer)
       audioOffer.subscribe(audio => publisher.plugin.offer({ audio }))
-
     } catch (e) {
-      publisher.plugin.offer({ audio: audioOffer as AudioOffer})
+      publisher.plugin.offer({ audio: audioOffer as AudioOffer })
     }
   }
-
 </script>
 
 {#if stream}

@@ -8,7 +8,6 @@ import type { PublishSpec } from './factory'
  * Initialise a new publisher with the given publish() init function
  */
 export async function mountPublisher(publish: InitPublish): Promise<PluginHandle<PublishSpec>> {
-
   // let resolved = false
 
   const opaqueId = Janus.randomString(12)
@@ -25,7 +24,6 @@ export async function mountPublisher(publish: InitPublish): Promise<PluginHandle
 
   return publisher
 }
-
 
 // utils
 

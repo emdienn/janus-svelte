@@ -9,14 +9,19 @@ import type { MakeHandle, Publisher } from '..'
 export type VideoResolution = 'lowres' | 'lowres-16:9' | 'stdres' | 'stdres-16:9' | 'hires' | 'hires-16:9'
 
 /**
+ * Offer an exact deviceId - applicable to both video and audio
+ */
+export type DeviceOffer = { deviceId: { exact: string } }
+
+/**
  * A video offer can be false ("muted"), true ("use default"), a resolution, or an exact device ID
  */
-export type VideoOffer = boolean | VideoResolution | { deviceId: { exact: string } }
+export type VideoOffer = boolean | VideoResolution | DeviceOffer
 
 /**
  * An audio offer can be false ("muted"), true ("use default"), or an exact device ID
  */
-export type AudioOffer = boolean | { deviceId: { exact: string } }
+export type AudioOffer = boolean | DeviceOffer
 
 /**
  * An offer can have one or both of video and audio offers

@@ -1,11 +1,19 @@
 {
   "name": "janus-svelte",
   "version": "0.0.1",
+  "description": "Svelte wrapper around Janus Gateway JS API",
   "scripts": {
     "dev": "svelte-kit dev --host",
     "build": "svelte-kit build",
     "package": "svelte-kit package",
     "preview": "svelte-kit preview",
+
+    "prepare": "npm run build",
+    "prepublishOnly": "npm test && npm run lint",
+    "preversion": "npm run lint",
+    "version": "npm run format",
+    "postversion": "git push && git push --tags",
+
     "check": "svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-check --tsconfig ./tsconfig.json --watch",
     "lint": "prettier --ignore-path .gitignore --check --plugin-search-dir=. . && eslint --ignore-path .gitignore .",
@@ -28,9 +36,25 @@
     "tslib": "^2.3.1",
     "typescript": "^4.4.3"
   },
-  "type": "module",
   "dependencies": {
     "janus-gateway-ts": "^1.0.0",
     "webrtc-adapter": "^8.1.0"
-  }
+  },
+  "keywords": [
+    "janus.js",
+    "janus-gateway",
+    "video",
+    "webrtc",
+    "typescript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emdienn/janus-svelte.git"
+  },
+  "bugs": {
+    "url": "https://github.com/emdienn/janus-svelte/issues"
+  },
+  "author": "emdienn",
+  "license": "MIT",
+  "type": "module"
 }

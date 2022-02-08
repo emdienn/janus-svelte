@@ -23,7 +23,7 @@
   let send: Send
 
   // if we fail to connect, capture the outcome
-  let error: any
+  let error
 
   const dispatch = createEventDispatcher()
 
@@ -34,7 +34,7 @@
 
   // a Readable-only version of our peer store that we can push into the slot
   const peers: Readable<Peers> = {
-    subscribe: peerStore.subscribe
+    subscribe: peerStore.subscribe,
   }
 
   async function mount() {
@@ -48,7 +48,6 @@
     delete plugin.initParticipants
 
     handle.on('data', (_, data: Message) => {
-
       // if we're notified of participants, update accordingly
       if ('participants' in data && data.participants.length) {
         peerStore.update(putPeers(data.participants))
@@ -66,7 +65,7 @@
       // if we're notified of a peer join, add them to the index
       if (data.textroom === 'join') {
         const { username, display } = data
-        peerStore.update(putPeers([ { username, display } ]))
+        peerStore.update(putPeers([{ username, display }]))
         dispatch('join', { username, display })
       }
     })
@@ -81,7 +80,6 @@
       error = e
     }
   })
-
 </script>
 
 {#if on}

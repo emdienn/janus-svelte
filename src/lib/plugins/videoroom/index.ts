@@ -12,6 +12,10 @@ import type { Peers } from './subscribe'
 
 export const VIDEO_ROOM = 'janus.plugin.videoroom'
 
+export type RoomId = number
+export type DisplayName = string | undefined
+export type RoomPin = string | undefined
+
 /**
  * The properties exposed when the component attached
  */

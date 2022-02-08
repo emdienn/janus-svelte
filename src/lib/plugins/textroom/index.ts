@@ -11,6 +11,11 @@ import type { OneOf } from '../../utils/typing'
 
 const TEXT_ROOM = 'janus.plugin.textroom'
 
+export type RoomId = number
+export type RoomPin = string | undefined
+export type UserName = string
+export type DisplayName = string | undefined
+
 /**
  * The properties exposed when the component attached
  */
@@ -41,8 +46,8 @@ export type Message = {
  * The anatomy of a participant
  */
 export type Participant = {
-  username: string
-  display: string
+  username: UserName
+  display: DisplayName
 }
 
 /**

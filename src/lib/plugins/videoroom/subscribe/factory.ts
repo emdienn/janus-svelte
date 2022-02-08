@@ -27,7 +27,7 @@ export default function (make: MakeHandle): MakeSubscriber {
               message: {
                 request: 'start',
                 room,
-              }
+              },
             })
           },
         })

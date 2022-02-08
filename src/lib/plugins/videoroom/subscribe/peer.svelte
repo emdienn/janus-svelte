@@ -11,7 +11,7 @@
   let stream: MediaStream
 
   // if our subscribe fails, capture the output here
-  let error: any
+  let error
 
   // extract these elements so we can push them to the slot
   let { meta, ended } = peer
@@ -36,7 +36,6 @@
       dispatch('error', e)
     }
   })
-
 </script>
 
 {#if stream}

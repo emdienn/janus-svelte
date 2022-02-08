@@ -6,7 +6,6 @@ import type { PluginHandle } from '../../../plugins/attach'
 import type { InitSubscribe, Message, Publisher } from '..'
 import type { SubscribePluginHandle } from './factory'
 
-
 /**
  * When we attach a subscriber, this is the structure into which we put its data
  */
@@ -15,7 +14,7 @@ export type PeerModel = {
   stream?: MediaStream
   meta: Writable<{
     display: string
-    [key: string]: any
+    [key: string]: unknown
   }>
   codec?: {
     audio?: string
@@ -29,13 +28,11 @@ export type PeerModel = {
  */
 export type Peers = Record<number, PeerModel>
 
-
 /**
  * Prepare a PeerModel for a given publisher, but don't actually perform the subscription: the application will decide
  * whether it wants to attach or not.
  */
 function makePeer(initSub: InitSubscribe, { id, display, audio_codec, video_codec }: Publisher): PeerModel {
-
   const opaqueId = Janus.randomString(12)
 
   return {
@@ -46,7 +43,7 @@ function makePeer(initSub: InitSubscribe, { id, display, audio_codec, video_code
     codec: {
       video: video_codec,
       audio: audio_codec,
-    }
+    },
   }
 }
 
@@ -55,7 +52,7 @@ function makePeer(initSub: InitSubscribe, { id, display, audio_codec, video_code
  */
 export function putPeers(initSub: InitSubscribe, publishers: Publisher[]): Updater<Peers> {
   return function (peers: Peers) {
-    publishers.forEach(p => peers[p.id] = makePeer(initSub, p))
+    publishers.forEach(p => (peers[p.id] = makePeer(initSub, p)))
     return peers
   }
 }
@@ -81,7 +78,6 @@ export function markAsEnded(unpublished: number): Updater<Peers> {
  * For a given peer, actually perform the subscription to that peer.
  */
 export async function mountSubscription(peer: PeerModel): Promise<PluginHandle<{ room: number }>> {
-
   // scope this so we have access to it as messages come in
   let remoteStream: MediaStream
 
@@ -112,7 +108,6 @@ export async function mountSubscription(peer: PeerModel): Promise<PluginHandle<{
 
   subscription.handle.on('message', (_, message: Message) => {
     switch (message.videoroom) {
-
       // we have successfully attached to the remote peer
       case 'attached':
         peer.meta.update(meta => {
@@ -129,19 +124,16 @@ export async function mountSubscription(peer: PeerModel): Promise<PluginHandle<{
         }
         break
     }
-
   })
 
   return subscription
 }
-
 
 export * as Factory from './factory'
 
 // utils
 
 export { default as makeSubscribe } from './factory'
-
 
 // components
 

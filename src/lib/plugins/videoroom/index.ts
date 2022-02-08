@@ -82,24 +82,28 @@ export type HandleFactory = {
  * When joining a room, you can join either as a publisher or subsriber.
  * If subscriber, the feed identifier to which you're subscribing must be given.
  */
-export type JoinOptions = {
-  ptype: 'publisher'
-} | {
-  ptype: 'subscriber'
-  feed: number
-}
+export type JoinOptions =
+  | {
+      ptype: 'publisher'
+    }
+  | {
+      ptype: 'subscriber'
+      feed: number
+    }
 
 /**
  * Generic function signature for attaching a new handle
  */
-export type MakeHandle = <T>(opaqueId: string, options: JoinOptions, makePlugin: (handle: Handle, msg: Message, jsep: JanusJS.JSEP) => T) => Promise<PluginHandle<T>>
-
+export type MakeHandle = <T>(
+  opaqueId: string,
+  options: JoinOptions,
+  makePlugin: (handle: Handle, msg: Message, jsep: JanusJS.JSEP) => T,
+) => Promise<PluginHandle<T>>
 
 /**
  * Factory function for generating a HandleFactory function. A factory factory, if you will.
  */
 export default function (janus: JanusJS.Janus, { room, pin, username }: RoomOptions): HandleFactory {
-
   // we prepare and cache this for all future requests, since these details won't change
   const joinRequest: JanusJS.PluginMessage['message'] = {
     request: 'join',
@@ -118,38 +122,38 @@ export default function (janus: JanusJS.Janus, { room, pin, username }: RoomOpti
   const attach = prepareAttach(janus, VIDEO_ROOM)
 
   // prepare our handle-make function
-  const make: MakeHandle = async (opaqueId, options, makePlugin) => new Promise(async (resolve, reject) => {
+  const make: MakeHandle = async (opaqueId, options, makePlugin) =>
+    new Promise((resolve, reject) => {
+      let resolved = false
 
-    let resolved = false
+      // request a new Janus handle: this will throw an error if it fails
+      attach(opaqueId)
+        .then(handle => {
+          handle.on('message', (_, message: Message, jsep) => {
+            if (resolved) {
+              return
+            }
+            resolved = true
 
-    // request a new Janus handle: this will throw an error if it fails
-    const handle = await attach(opaqueId)
+            if ('error' in message) {
+              reject({ message: message.error, code: message.error_code })
+            } else {
+              resolve({ handle, plugin: makePlugin(handle, message, jsep) })
+            }
+          })
 
-    handle.on('message', (_, message: Message, jsep) => {
-      if (resolved) {
-        return
-      }
-      resolved = true
-
-      if ('error' in message) {
-        reject({ message: message.error, code: message.error_code })
-      } else {
-        resolve({ handle, plugin: makePlugin(handle, message, jsep) })
-      }
-
+          // on attach, send our join request
+          handle.send({
+            message: {
+              ...options,
+              ...joinRequest,
+              data: true,
+              offer_data: true,
+            },
+          })
+        })
+        .catch(reject)
     })
-
-    // on attach, send our join request
-    handle.send({
-      message: {
-        ...options,
-        ...joinRequest,
-        data: true,
-        offer_data: true,
-      }
-    })
-
-  })
 
   // factory our specific types of handles
   const publish = makePublish(make)
@@ -158,12 +162,10 @@ export default function (janus: JanusJS.Janus, { room, pin, username }: RoomOpti
   return { subscribe, publish }
 }
 
-
 // utils
 
 export * as Pub from './publish'
 export * as Sub from './subscribe'
-
 
 // components
 

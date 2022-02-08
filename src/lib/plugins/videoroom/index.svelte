@@ -33,14 +33,14 @@
   let core: PluginHandle<PublishSpec>
 
   // if something goes wrong in init, drop the output here
-  let error: any
+  let error
 
   // our store of peers
   const peerStore = writable<Peers>({})
 
   // a Readable-only version of our peer store that we can push to the slot
   const peers: Readable<Peers> = {
-    subscribe: peerStore.subscribe
+    subscribe: peerStore.subscribe,
   }
 
   /**
@@ -60,7 +60,6 @@
     // handle any publishers already in the room
     updatePeers(core.plugin.initPublishers)
     delete core.plugin.initPublishers
-
 
     core.handle.on('message', (_, message: Message) => {
       // if we're notified of publishers, update accordingly
@@ -91,7 +90,6 @@
       dispatch('error', e)
     }
   })
-
 </script>
 
 {#if core}

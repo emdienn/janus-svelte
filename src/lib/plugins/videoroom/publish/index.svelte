@@ -26,8 +26,11 @@
     // create our publisher handle
     publisher = await mountPublisher(publish)
 
-    // when we get a local stream, capture it locally
-    publisher.handle.on('localstream', (handle, s) => stream = s)
+    // when we get a local stream, capture it locally and also dispatch it
+    publisher.handle.on('localstream', (handle, s) => {
+      stream = s
+      dispatch('localstream', s)
+    })
 
     // capture the plugin's ID as the feed ID
     feedId = publisher.plugin.id

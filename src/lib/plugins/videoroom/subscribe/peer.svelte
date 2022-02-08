@@ -20,10 +20,11 @@
     // create our subscriber handle
     const subscription = await mountSubscription(peer)
 
-    // when we receive the remote stream, capture it locally
+    // when we receive the remote stream, capture it
     subscription.handle.on('remotestream', (handle, s) => {
+      peer.stream = s
       stream = s
-      dispatch('remotestream', s)
+      dispatch('remotestream', { peer })
     })
   }
 

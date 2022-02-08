@@ -29,11 +29,16 @@
   export const refresh = async () => {
     devices = await listDevices()
     selected = getDeviceIdsFromLocalStream(stream)
+
+    dispatch('refresh', { devices, selected })
   }
 
   const dispatch = createEventDispatcher()
 
-  onMount(refresh)
+  onMount(async () => {
+    dispatch('attach', { refresh })
+    refresh()
+  })
 
   // reactively dispatch any changes that occur in our selected sources
   $: if (selected.audio) { dispatch('changeAudioSource', selected.audio) }

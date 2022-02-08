@@ -2,6 +2,7 @@
   import { createEventDispatcher, onMount } from 'svelte'
   import { mountPublisher } from './'
 
+  import type { Readable } from 'svelte/store'
   import type { AudioOffer, PublishSpec, VideoOffer } from './factory'
   import type { InitPublish } from '..'
   import type { PluginHandle } from 'janus-svelte/plugins/attach'
@@ -10,8 +11,12 @@
   export let publish: InitPublish
 
   // what we're offering for video and audio
-  export let videoOffer: VideoOffer
-  export let audioOffer: AudioOffer
+  // WARNING: POTENTIAL FOR MEMORY LEAK IF INCORRECTLY USED!
+  // Either you should pass a Readable<> *ONCE* and update() it, or pass
+  // mutations as direct literals, updated from the parent component. If you
+  // pass replacement stores, the subscriptions will leak.
+  export let videoOffer: VideoOffer | Readable<VideoOffer>
+  export let audioOffer: AudioOffer | Readable<AudioOffer>
 
   const dispatch = createEventDispatcher()
 
@@ -21,6 +26,14 @@
   // variables that we'll expose to the slot
   let stream: MediaStream
   let feedId: number
+
+
+  // assertion function for testing whether something is a store
+  function assertIsStore<T>(offer: any): asserts offer is Readable<T> {
+    if (!('subscribe' in offer)) {
+      throw new Error('Subscribe method not found')
+    }
+  }
 
   onMount(async () => {
     // create our publisher handle
@@ -40,8 +53,27 @@
   })
 
   // whenever our video or audio offers change, we want to trigger an offer() in our handle
-  $: if (publisher && typeof videoOffer !== 'undefined') { publisher.plugin.offer({ video: videoOffer }) }
-  $: if (publisher && typeof audioOffer !== 'undefined') { publisher.plugin.offer({ audio: audioOffer }) }
+  $: if (publisher && typeof videoOffer !== 'undefined') {
+    try {
+      // is this actually a store?
+      assertIsStore<VideoOffer>(videoOffer)
+      videoOffer.subscribe(video => publisher.plugin.offer({ video }))
+
+    } catch (e) {
+      publisher.plugin.offer({ video: videoOffer as VideoOffer })
+    }
+  }
+
+  $: if (publisher && typeof audioOffer !== 'undefined') {
+    try {
+      // is this actually a store?
+      assertIsStore<AudioOffer>(audioOffer)
+      audioOffer.subscribe(audio => publisher.plugin.offer({ audio }))
+
+    } catch (e) {
+      publisher.plugin.offer({ audio: audioOffer as AudioOffer})
+    }
+  }
 
 </script>
 

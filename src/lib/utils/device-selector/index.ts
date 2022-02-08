@@ -3,6 +3,21 @@ import Janus from 'janus-gateway-ts'
 export { default as Selector } from './index.svelte'
 
 /**
+ * The payload of the attach event; exposes the refresh function to the caller
+ */
+export type SelectorAttachEvent = {
+  refresh: () => Promise<void>
+}
+
+/**
+ * The payload of a refresh event, listing the devices and those selected
+ */
+export type RefreshEvent = {
+  devices: Devices
+  selected: SelectedDevices
+}
+
+/**
  * Config option for which kinds of media to check and return
  */
 type ListDeviceConfig = { audio?: boolean, video?: boolean }

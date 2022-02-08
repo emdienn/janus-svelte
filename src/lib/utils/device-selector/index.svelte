@@ -26,7 +26,7 @@
 
   // export this function, so the application can call refresh() if and when it wants to
   // I suppose this operates slightly differently to the other components which would dispatch an event onMount instead
-  export const refresh = async () => {
+  export const refresh = async (): Promise<void> => {
     devices = await listDevices()
     selected = getDeviceIdsFromLocalStream(stream)
 
@@ -41,8 +41,12 @@
   })
 
   // reactively dispatch any changes that occur in our selected sources
-  $: if (selected.audio) { dispatch('changeAudioSource', selected.audio) }
-  $: if (selected.video) { dispatch('changeVideoSource', selected.video) }
+  $: if (selected.audio) {
+    dispatch('changeAudioSource', selected.audio)
+  }
+  $: if (selected.video) {
+    dispatch('changeVideoSource', selected.video)
+  }
 </script>
 
 <slot {devices} {selected} {refresh} />

@@ -25,7 +25,7 @@ export type RefreshEvent = {
 /**
  * Config option for which kinds of media to check and return
  */
-type ListDeviceConfig = { audio?: boolean, video?: boolean }
+type ListDeviceConfig = { audio?: boolean; video?: boolean }
 
 /**
  * Signature for Janus' listDevices function (missing from library TS)
@@ -35,7 +35,7 @@ type ListDevices = (callback: (devices: MediaDeviceInfo[]) => void, config?: Lis
 /**
  * The return structure of the ListDevices function
  */
-export type SelectedDevices = { audio?: Id, video?: Id }
+export type SelectedDevices = { audio?: Id; video?: Id }
 
 /**
  * Index devices as lists according to their kind
@@ -61,12 +61,11 @@ export type OfferManager = {
  * false, otherwise it's a janus-compatible object structure with the deviceId
  */
 export function setupOffer(initial: Offer | false): OfferManager {
-
-  const make = ([ exact, muted ]: [ string, boolean ]): DeviceOffer | false => muted ? false : { deviceId: { exact } }
+  const make = ([exact, muted]: [string, boolean]): DeviceOffer | false => (muted ? false : { deviceId: { exact } })
 
   const id = writable<string>()
   const muted = writable<boolean>(initial === false)
-  const offer = derived<[ typeof id, typeof muted ], DeviceOffer | false>([ id, muted ], make, initial as any)
+  const offer = derived<[typeof id, typeof muted], DeviceOffer | false>([id, muted], make, initial as any) // eslint-disable-line
 
   function setDeviceId(deviceId: string) {
     id.set(deviceId)
@@ -81,7 +80,10 @@ export function setupOffer(initial: Offer | false): OfferManager {
   }
 
   return {
-    mute, unmute, setDeviceId, offer
+    mute,
+    unmute,
+    setDeviceId,
+    offer,
   }
 }
 
@@ -89,7 +91,6 @@ export function setupOffer(initial: Offer | false): OfferManager {
  * A promisified wrapper around Janus' listDevices() function
  */
 export async function listDevices(): Promise<Devices> {
-
   const inputs: Devices = {
     videoinput: [],
     audioinput: [],
@@ -101,19 +102,21 @@ export async function listDevices(): Promise<Devices> {
   }
 
   // typecast this, because library limitations
-  let listDevices: ListDevices = (Janus as any).listDevices
+  const listDevices: ListDevices = (Janus as any).listDevices // eslint-disable-line
 
-  return new Promise(resolve => listDevices(devices => {
-    // for each 'videoinput' or 'audioinput' device found, push them onto their respective list
-    devices.forEach(d => {
-      if (d.kind in inputs) {
-        inputs[d.kind].push(d)
-      }
-    })
+  return new Promise(resolve =>
+    listDevices(devices => {
+      // for each 'videoinput' or 'audioinput' device found, push them onto their respective list
+      devices.forEach(d => {
+        if (d.kind in inputs) {
+          inputs[d.kind].push(d)
+        }
+      })
 
-    // resolve our inputs now we've enumerated them
-    resolve(inputs)
-  }))
+      // resolve our inputs now we've enumerated them
+      resolve(inputs)
+    }),
+  )
 }
 
 /**
@@ -140,7 +143,4 @@ export function getDeviceIdsFromLocalStream(localStream: MediaStream, config?: L
 /**
  * Grab a device ID from a set of media stream tracks.
  */
-const getDeviceId = (tracks: MediaStreamTrack[]) => tracks && tracks.length
-  ? tracks[0].getSettings().deviceId
-  : null
-
+const getDeviceId = (tracks: MediaStreamTrack[]) => (tracks && tracks.length ? tracks[0].getSettings().deviceId : null)

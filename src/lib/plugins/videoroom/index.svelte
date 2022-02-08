@@ -62,7 +62,7 @@
     delete core.plugin.initPublishers
 
 
-    core.handle.on('message', (handle, message: Message, jsep) => {
+    core.handle.on('message', (_, message: Message) => {
       // if we're notified of publishers, update accordingly
       if ('publishers' in message) {
         updatePeers(message.publishers)

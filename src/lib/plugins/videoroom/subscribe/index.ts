@@ -104,13 +104,13 @@ export async function mountSubscription(peer: PeerModel): Promise<PluginHandle<{
   }
 
   // each time we get a remote stream event, refresh the meta
-  subscription.handle.on('remotestream', (handle, stream) => {
+  subscription.handle.on('remotestream', (_, stream) => {
     remoteStream = stream
     peer.stream = stream
     updateMeta()
   })
 
-  subscription.handle.on('message', (handle, message: Message, jsep) => {
+  subscription.handle.on('message', (_, message: Message) => {
     switch (message.videoroom) {
 
       // we have successfully attached to the remote peer

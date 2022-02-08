@@ -1,7 +1,7 @@
 import Janus from 'janus-gateway-ts'
 
 import type { PluginHandle } from 'janus-svelte/plugins/attach'
-import type { InitPublish, Message } from '..'
+import type { InitPublish } from '..'
 import type { PublishSpec } from './factory'
 
 /**
@@ -16,7 +16,7 @@ export async function mountPublisher(publish: InitPublish): Promise<PluginHandle
   // attach our new handle
   const publisher = await publish(opaqueId)
 
-  publisher.handle.on('message', (_, message, jsep) => {
+  publisher.handle.on('message', (_, __, jsep) => {
     // always reciprocate this handshake if it's present
     if (jsep) {
       publisher.handle.handleRemoteJsep({ jsep })

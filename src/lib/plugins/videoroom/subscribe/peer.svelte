@@ -21,7 +21,7 @@
     const subscription = await mountSubscription(peer)
 
     // when we receive the remote stream, capture it
-    subscription.handle.on('remotestream', (handle, s) => {
+    subscription.handle.on('remotestream', (_, s) => {
       peer.stream = s
       stream = s
       dispatch('remotestream', { peer })

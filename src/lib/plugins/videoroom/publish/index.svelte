@@ -40,7 +40,7 @@
     publisher = await mountPublisher(publish)
 
     // when we get a local stream, capture it locally and also dispatch it
-    publisher.handle.on('localstream', (handle, s) => {
+    publisher.handle.on('localstream', (_, s) => {
       stream = s
       dispatch('localstream', s)
     })

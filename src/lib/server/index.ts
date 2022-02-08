@@ -4,7 +4,7 @@ import adapter from 'webrtc-adapter'
 import type { JanusJS } from 'janus-gateway-ts'
 
 // incorporate the webrtc adapter into our dependencies by default
-const deps = (dependencies:JanusJS.Dependencies) => Janus.useDefaultDependencies({ adapter, ...dependencies })
+const deps = (dependencies: JanusJS.Dependencies) => Janus.useDefaultDependencies({ adapter, ...dependencies })
 
 export type InitOptions = {
   server: JanusJS.ConstructorOptions['server']
@@ -19,22 +19,26 @@ export type InitOptions = {
   dependencies?: JanusJS.InitOptions['dependencies']
 }
 
-type Init = (options:InitOptions) => Promise<Janus>
+type Init = (options: InitOptions) => Promise<Janus>
 
 /**
  * Promise to initialise a new connection to Janus
  */
-export const init:Init = ({ debug, server, dependencies }) => new Promise(
-  (resolve, reject) => Janus.init({ debug, dependencies: deps(dependencies), callback: () => {
-    const janus = new Janus({
-      server,
-      destroyed: () => Janus.log('Janus be destroy'),
-      error: e => reject(e),
-      success: () => resolve(janus)
-    })
-  }})
-)
-
+export const init: Init = ({ debug, server, dependencies }) =>
+  new Promise((resolve, reject) =>
+    Janus.init({
+      debug,
+      dependencies: deps(dependencies),
+      callback: () => {
+        const janus = new Janus({
+          server,
+          destroyed: () => Janus.log('Janus be destroy'),
+          error: e => reject(e),
+          success: () => resolve(janus),
+        })
+      },
+    }),
+  )
 
 // components
 

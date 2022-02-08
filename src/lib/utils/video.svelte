@@ -32,10 +32,9 @@
     // attempt an auto-play
     play()
   }
-
 </script>
 
-<svelte:window on:click={() => needClick && play()}/>
+<svelte:window on:click={() => needClick && play()} />
 
 <video on:click={() => video.play()} bind:this={video}>
   <track kind="captions" />

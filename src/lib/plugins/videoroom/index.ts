@@ -1,4 +1,4 @@
-import prepareAttach from 'janus-svelte/plugins/attach'
+import prepareAttach from '$lib/attach'
 
 import { makePublish } from './publish'
 import { makeSubscribe } from './subscribe'
@@ -7,7 +7,7 @@ import type { JanusJS } from 'janus-gateway-ts'
 import type { Readable } from 'svelte/store'
 
 import type { PublishSpec } from './publish/factory'
-import type { PluginHandle, Handle } from '$lib/plugins/attach'
+import type { PluginHandle, Handle } from '$lib/attach'
 import type { Peers } from './subscribe'
 
 export const VIDEO_ROOM = 'janus.plugin.videoroom'

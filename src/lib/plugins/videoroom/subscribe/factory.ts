@@ -1,5 +1,5 @@
 import type { JanusJS } from 'janus-gateway-ts'
-import type { PluginHandle } from 'janus-svelte/plugins/attach'
+import type { PluginHandle } from '$lib/attach'
 import type { MakeHandle } from '..'
 
 export type SubscribePluginHandle = PluginHandle<{ room: number }>

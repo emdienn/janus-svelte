@@ -1,6 +1,6 @@
 import Janus from 'janus-gateway-ts'
 
-import type { PluginHandle } from 'janus-svelte/plugins/attach'
+import type { PluginHandle } from '$lib/attach'
 import type { InitPublish } from '..'
 import type { PublishSpec } from './factory'
 

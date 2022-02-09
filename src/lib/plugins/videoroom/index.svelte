@@ -11,7 +11,7 @@
 
   import type { Message, Publisher } from '.'
   import type { Peers } from './subscribe'
-  import type { PluginHandle } from '../../plugins/attach'
+  import type { PluginHandle } from '$lib/plugins/attach'
   import type { PublishSpec } from './publish/factory'
 
   // the janus connection we're using

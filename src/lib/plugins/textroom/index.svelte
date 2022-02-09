@@ -9,7 +9,7 @@
   import type { Readable } from 'svelte/store'
 
   import type { Send, Peers, Message } from '.'
-  import type { Event } from '../attach'
+  import type { Event } from '$lib/plugins/attach'
 
   // the janus connection we're using
   export let janus: JanusJS.Janus

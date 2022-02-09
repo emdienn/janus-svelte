@@ -1,13 +1,13 @@
 import Janus from 'janus-gateway-ts'
 import { writable } from 'svelte/store'
 
-import prepareAttach from '../attach'
+import prepareAttach from '$lib/plugins/attach'
 
 import type { JanusJS } from 'janus-gateway-ts'
 import type { Readable, Updater, Writable } from 'svelte/store'
 
-import type { PluginHandle, Event } from '../attach'
-import type { OneOf } from '../../utils/typing'
+import type { PluginHandle, Event } from '$lib/plugins/attach'
+import type { OneOf } from '$lib/utils/typing'
 
 const TEXT_ROOM = 'janus.plugin.textroom'
 

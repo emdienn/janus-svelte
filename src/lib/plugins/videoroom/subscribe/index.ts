@@ -2,7 +2,7 @@ import Janus from 'janus-gateway-ts'
 import { writable } from 'svelte/store'
 
 import type { Writable, Updater } from 'svelte/store'
-import type { PluginHandle } from '../../../plugins/attach'
+import type { PluginHandle } from '$lib/plugins/attach'
 import type { InitSubscribe, Message, Publisher } from '..'
 import type { SubscribePluginHandle } from './factory'
 

@@ -57,13 +57,16 @@ export type OfferManager = {
 }
 
 /**
+ * Derive an offer based on the device and mute-state given
+ */
+const make = ([exact, muted]: [string, boolean]): DeviceOffer | false => ((muted || !exact) ? false : { deviceId: { exact } })
+
+/**
  * Wrap up the logic for offer handling: `mute` will always set the offer to
  * false, otherwise it's a janus-compatible object structure with the deviceId
  */
 export function setupOffer(initial: Offer | false): OfferManager {
-  const make = ([exact, muted]: [string, boolean]): DeviceOffer | false => (muted ? false : { deviceId: { exact } })
-
-  const id = writable<string>()
+  const id = writable<string>(typeof initial === 'string' ? initial : undefined)
   const muted = writable<boolean>(initial === false)
   const offer = derived<[typeof id, typeof muted], DeviceOffer | false>([id, muted], make, initial as any) // eslint-disable-line
 

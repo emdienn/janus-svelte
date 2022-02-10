@@ -28,7 +28,7 @@
 
   const dispatch = createEventDispatcher()
 
-  const makePluginHandle = connect(janus, { room, pin, username })
+  const makePluginHandle = connect(janus, { room, pin, username, display })
 
   // our store of peers
   const peerStore = writable<Peers>({})

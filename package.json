@@ -1,6 +1,6 @@
 {
   "name": "janus-svelte",
-  "version": "0.0.1",
+  "version": "0.0.4",
   "description": "Svelte wrapper around Janus Gateway JS API",
   "scripts": {
     "dev": "svelte-kit dev --host",

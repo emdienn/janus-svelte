@@ -78,6 +78,7 @@
       await mount()
     } catch (e) {
       error = e
+      dispatch('error', e)
     }
   })
 </script>

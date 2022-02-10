@@ -96,12 +96,13 @@ type ConnectParams = {
   room: number
   pin?: string | undefined
   username: string
+  display?: string
 }
 
 // this never changes, so why declare it into memory repeatedly?
 const media = { video: false, audio: false, data: true }
 
-export function connect(janus: JanusJS.Janus, { room, pin, username }: ConnectParams): InitTextRoom {
+export function connect(janus: JanusJS.Janus, { room, pin, username, display }: ConnectParams): InitTextRoom {
   // prepare our attach function for this plugin
   const attach = prepareAttach(janus, TEXT_ROOM)
 
@@ -179,7 +180,7 @@ export function connect(janus: JanusJS.Janus, { room, pin, username }: ConnectPa
               transaction: joinTxId,
               room: parseInt(`${room}`),
               username,
-              display: username,
+              display: display || username,
             }
 
             // set password if there is one

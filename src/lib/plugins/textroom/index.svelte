@@ -17,6 +17,7 @@
   // the room connection details
   export let room: number
   export let username: string
+  export let display: string = undefined
   export let pin: string = undefined
 
   let on: Event
